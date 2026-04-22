@@ -62,6 +62,10 @@ const updateIssueStatus = async (req, res) => {
       return res.status(404).json({ message: 'Issue not found' });
     }
 
+    if (req.user.role !== 'authority') {
+      return res.status(403).json({ message: 'Not authorized to update status' });
+    }
+
     issue.status = req.body.status || issue.status;
     const updatedIssue = await issue.save();
 
