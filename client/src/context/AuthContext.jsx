@@ -9,6 +9,18 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchUser = async () => {
+    try {
+      const res = await axios.get('/api/auth/profile');
+      setUser(res.data);
+    } catch (err) {
+      localStorage.removeItem('token');
+      delete axios.defaults.headers.common['Authorization'];
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -19,18 +31,6 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
-
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get('/api/auth/profile');
-      setUser(res.data);
-    } catch (error) {
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const login = async (email, password) => {
     const res = await axios.post('/api/auth/login', { email, password });
